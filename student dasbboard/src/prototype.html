@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Dropout Portal - Educational Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --font-size: 14px;
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            --text-4xl: 2.25rem;
+        }
+        
+        html {
+            font-size: var(--font-size);
+        }
+        
+        h1 {
+            font-size: var(--text-2xl);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        h2 {
+            font-size: var(--text-xl);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        h3 {
+            font-size: var(--text-lg);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        h4 {
+            font-size: var(--text-base);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        p, input {
+            font-size: var(--text-base);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        
+        button, label {
+            font-size: var(--text-base);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        .hidden { display: none; }
+        .tab-active { background-color: #4f46e5; color: white; }
+        .tab-inactive { background-color: #f3f4f6; color: #6b7280; }
+        
+        .risk-high { background-color: #fef2f2; color: #dc2626; }
+        .risk-medium { background-color: #fffbeb; color: #d97706; }
+        .risk-low { background-color: #f0fdf4; color: #16a34a; }
+        
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="w-full min-h-screen bg-white">
+        <div class="h-full flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100">
+            <!-- Header -->
+            <div class="bg-white shadow-sm px-6 py-4 border-b">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="graduation-cap" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">A Dropout Portal</h1>
+                        <p class="text-sm text-gray-600">Educational Management System</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col justify-center px-6 py-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+                    <p class="text-gray-600">Please select your role to continue</p>
+                </div>
+
+                <div class="max-w-2xl mx-auto space-y-4">
+                    <!-- Teacher Role Card -->
+                    <div class="cursor-pointer transition-all duration-200 border-2 border-gray-200 hover:border-indigo-300 hover:shadow-sm bg-white rounded-lg p-6" onclick="showScreen('teacherScreen')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="users" class="w-6 h-6 text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold">Teacher</h3>
+                                    <p class="text-gray-600">Access student management dashboard</p>
+                                </div>
+                            </div>
+                            <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">Educator</span>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600 space-y-1">
+                            <p>• View and manage student records</p>
+                            <p>• Track attendance and grades</p>
+                            <p>• Monitor dropout risk and send notifications</p>
+                        </div>
+                    </div>
+
+                    <!-- Student Role Card -->
+                    <div class="cursor-pointer transition-all duration-200 border-2 border-gray-200 hover:border-green-300 hover:shadow-sm bg-white rounded-lg p-6" onclick="showScreen('studentScreen')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="graduation-cap" class="w-6 h-6 text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold">Student</h3>
+                                    <p class="text-gray-600">View your academic progress</p>
+                                </div>
+                            </div>
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Learner</span>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600 space-y-1">
+                            <p>• View attendance and grades</p>
+                            <p>• Track academic performance</p>
+                            <p>• Monitor upcoming activities</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Credentials -->
+                <div class="max-w-2xl mx-auto mt-8 p-4 bg-white rounded-lg border border-gray-200">
+                    <h3 class="font-medium text-gray-900 mb-2">Demo Credentials</h3>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <p><span class="font-medium">Teacher:</span> Access full student management</p>
+                        <p><span class="font-medium">Student:</span> View personal academic data</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-white border-t">
+                <p class="text-center text-xs text-gray-500">
+                    © 2025 A Dropout Portal. Educational Management System
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Dashboard -->
+    <div id="teacherScreen" class="hidden w-full min-h-screen bg-gray-50">
+        <!-- Header -->
+        <div class="bg-white shadow-sm px-4 py-3 border-b">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="users" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-semibold text-gray-900">Teacher Dashboard</h1>
+                        <p class="text-xs text-gray-600">Mathematics - Grade 10</p>
+                    </div>
+                </div>
+                <button onclick="showScreen('loginScreen')" class="text-gray-600 hover:text-gray-900 p-2">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="px-4 py-2 bg-white border-b">
+            <div class="flex space-x-1">
+                <button class="tab-active px-4 py-2 rounded-lg text-sm" onclick="showTab('overview')">Overview</button>
+                <button class="tab-inactive px-4 py-2 rounded-lg text-sm" onclick="showTab('students')">Students</button>
+                <button class="tab-inactive px-4 py-2 rounded-lg text-sm" onclick="showTab('alerts')">
+                    <div class="flex items-center gap-1">
+                        <i data-lucide="bell" class="w-3 h-3"></i>
+                        Alerts
+                        <span class="bg-red-500 text-white w-4 h-4 text-xs rounded-full flex items-center justify-center">2</span>
+                    </div>
+                </button>
+                <button class="tab-inactive px-4 py-2 rounded-lg text-sm" onclick="showTab('details')">Details</button>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="flex-1 p-4">
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
+                            <span class="text-sm text-gray-600">Total Students</span>
+                        </div>
+                        <p class="text-2xl font-bold">6</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="calendar" class="w-4 h-4 text-green-600"></i>
+                            <span class="text-sm text-gray-600">Avg. Attendance</span>
+                        </div>
+                        <p class="text-2xl font-bold">80%</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="trending-up" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm text-gray-600">Avg. GPA</span>
+                        </div>
+                        <p class="text-2xl font-bold">3.3</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-red-600"></i>
+                            <span class="text-sm text-gray-600">At Risk</span>
+                        </div>
+                        <p class="text-2xl font-bold">2</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg border">
+                        <h3 class="font-semibold mb-4">Class Performance Overview</h3>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border">
+                        <h3 class="font-semibold mb-4">Dropout Risk Distribution</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="risk-low px-3 py-1 rounded-full text-sm">Low Risk (0-24%)</span>
+                                <span class="font-semibold">3 students</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="risk-medium px-3 py-1 rounded-full text-sm">Medium Risk (25-39%)</span>
+                                <span class="font-semibold">1 student</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="risk-high px-3 py-1 rounded-full text-sm">High Risk (40%+)</span>
+                                <span class="font-semibold">2 students</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Tab -->
+            <div id="studentsTab" class="hidden">
+                <div class="bg-white rounded-lg border overflow-hidden">
+                    <div class="p-4 border-b">
+                        <h3 class="font-semibold">Student Management (6 students)</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Grade</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Attendance</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">GPA</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Dropout Risk</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3">Alice Johnson</td>
+                                    <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A-</span></td>
+                                    <td class="px-4 py-3 text-yellow-600">85%</td>
+                                    <td class="px-4 py-3">3.7</td>
+                                    <td class="px-4 py-3"><span class="risk-medium px-2 py-1 rounded text-sm">28%</span></td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-blue-600 hover:text-blue-800 text-sm">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">Bob Smith</td>
+                                    <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A</span></td>
+                                    <td class="px-4 py-3 text-green-600">92%</td>
+                                    <td class="px-4 py-3">3.9</td>
+                                    <td class="px-4 py-3"><span class="risk-low px-2 py-1 rounded text-sm">15%</span></td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-blue-600 hover:text-blue-800 text-sm">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">Carol Davis</td>
+                                    <td class="px-4 py-3"><span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-sm">C+</span></td>
+                                    <td class="px-4 py-3 text-red-600">65%</td>
+                                    <td class="px-4 py-3">2.8</td>
+                                    <td class="px-4 py-3"><span class="risk-high px-2 py-1 rounded text-sm">55%</span></td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-red-600 hover:text-red-800 text-sm">Needs Attention</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">Frank Miller</td>
+                                    <td class="px-4 py-3"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-sm">D+</span></td>
+                                    <td class="px-4 py-3 text-red-600">58%</td>
+                                    <td class="px-4 py-3">2.2</td>
+                                    <td class="px-4 py-3"><span class="risk-high px-2 py-1 rounded text-sm">62%</span></td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-red-600 hover:text-red-800 text-sm">Critical</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Tab -->
+            <div id="alertsTab" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-lg border">
+                    <h3 class="font-semibold mb-4">High-Risk Students Requiring Attention</h3>
+                    <div class="space-y-4">
+                        <div class="border border-red-200 bg-red-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium text-red-900">Frank Miller - Critical Risk (62%)</h4>
+                                    <p class="text-sm text-red-700 mt-1">Low attendance (58%) and poor grades (D+, GPA: 2.2)</p>
+                                    <p class="text-sm text-red-600 mt-1">Last activity: 8 days ago</p>
+                                </div>
+                                <div class="space-x-2">
+                                    <button class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        Schedule Counseling
+                                    </button>
+                                    <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                        Send Notification
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border border-red-200 bg-red-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium text-red-900">Carol Davis - High Risk (55%)</h4>
+                                    <p class="text-sm text-red-700 mt-1">Poor attendance (65%) and declining performance (C+, GPA: 2.8)</p>
+                                    <p class="text-sm text-red-600 mt-1">Last activity: 6 days ago</p>
+                                </div>
+                                <div class="space-x-2">
+                                    <button class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        Schedule Counseling
+                                    </button>
+                                    <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                        Send Notification
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg border">
+                    <h3 class="font-semibold mb-4">Notification Center</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-yellow-50 border border-yellow-200 rounded">
+                            <span class="text-sm">Alice Johnson - Academic performance notification sent</span>
+                            <span class="text-xs text-gray-500">2 days ago</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-green-50 border border-green-200 rounded">
+                            <span class="text-sm">Bob Smith - Academic performance notification sent</span>
+                            <span class="text-xs text-gray-500">3 days ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Tab -->
+            <div id="detailsTab" class="hidden">
+                <div class="bg-white p-6 rounded-lg border">
+                    <h3 class="font-semibold mb-4">Detailed Analytics</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-medium mb-3">Attendance Trends</h4>
+                            <div class="chart-container">
+                                <canvas id="attendanceChart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium mb-3">Grade Distribution</h4>
+                            <div class="chart-container">
+                                <canvas id="gradeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="studentScreen" class="hidden w-full min-h-screen bg-gray-50">
+        <!-- Header -->
+        <div class="bg-white shadow-sm px-4 py-3 border-b">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="award" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-semibold text-gray-900">Student Portal</h1>
+                        <p class="text-xs text-gray-600">Alice Johnson - 10th Grade</p>
+                    </div>
+                </div>
+                <button onclick="showScreen('loginScreen')" class="text-gray-600 hover:text-gray-900 p-2">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Student Tabs -->
+        <div class="px-4 py-2 bg-white border-b">
+            <div class="flex space-x-1">
+                <button class="tab-active px-4 py-2 rounded-lg text-sm" onclick="showStudentTab('overview')">Overview</button>
+                <button class="tab-inactive px-4 py-2 rounded-lg text-sm" onclick="showStudentTab('attendance')">Attendance</button>
+                <button class="tab-inactive px-4 py-2 rounded-lg text-sm" onclick="showStudentTab('grades')">Grades</button>
+                <button class="tab-inactive px-4 py-2 rounded-lg text-sm" onclick="showStudentTab('activities')">Activities</button>
+                <button class="tab-inactive px-4 py-2 rounded-lg text-sm" onclick="showStudentTab('notifications')">
+                    <div class="flex items-center gap-1">
+                        <i data-lucide="bell" class="w-3 h-3"></i>
+                        Notifications
+                        <span class="bg-blue-500 text-white w-4 h-4 text-xs rounded-full flex items-center justify-center">1</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Student Tab Content -->
+        <div class="flex-1 p-4">
+            <!-- Student Overview Tab -->
+            <div id="studentOverviewTab" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="calendar" class="w-4 h-4 text-green-600"></i>
+                            <span class="text-sm text-gray-600">Attendance</span>
+                        </div>
+                        <p class="text-2xl font-bold">85%</p>
+                        <p class="text-sm text-yellow-600">153/180 days</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="trending-up" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm text-gray-600">Current GPA</span>
+                        </div>
+                        <p class="text-2xl font-bold">3.7</p>
+                        <p class="text-sm text-green-600">A- Average</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="book-open" class="w-4 h-4 text-purple-600"></i>
+                            <span class="text-sm text-gray-600">Activities</span>
+                        </div>
+                        <p class="text-2xl font-bold">13/15</p>
+                        <p class="text-sm text-green-600">87% Complete</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-orange-600"></i>
+                            <span class="text-sm text-gray-600">Next Deadline</span>
+                        </div>
+                        <p class="text-lg font-bold">Jan 20</p>
+                        <p class="text-sm text-gray-600">Math Assignment</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg border">
+                        <h3 class="font-semibold mb-4">GPA Progress</h3>
+                        <div class="chart-container">
+                            <canvas id="studentGPAChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border">
+                        <h3 class="font-semibold mb-4">Subject Performance</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span>Mathematics</span>
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A (92%)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Science</span>
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A- (88%)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>English</span>
+                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">B+ (85%)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>History</span>
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A (90%)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Art</span>
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A+ (95%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Attendance Tab -->
+            <div id="studentAttendanceTab" class="hidden">
+                <div class="bg-white p-6 rounded-lg border">
+                    <h3 class="font-semibold mb-4">Attendance Overview</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-medium mb-3">Monthly Attendance</h4>
+                            <div class="chart-container">
+                                <canvas id="studentAttendanceChart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium mb-3">Attendance Summary</h4>
+                            <div class="space-y-4">
+                                <div class="flex justify-between">
+                                    <span>Total School Days</span>
+                                    <span class="font-semibold">180</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Days Present</span>
+                                    <span class="font-semibold text-green-600">153</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Days Absent</span>
+                                    <span class="font-semibold text-red-600">27</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Attendance Rate</span>
+                                    <span class="font-semibold text-yellow-600">85%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Grades Tab -->
+            <div id="studentGradesTab" class="hidden">
+                <div class="bg-white p-6 rounded-lg border">
+                    <h3 class="font-semibold mb-4">Academic Performance</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Subject</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Grade</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Score</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Credits</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3">Mathematics</td>
+                                    <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A</span></td>
+                                    <td class="px-4 py-3">92%</td>
+                                    <td class="px-4 py-3">4.0</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">Science</td>
+                                    <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A-</span></td>
+                                    <td class="px-4 py-3">88%</td>
+                                    <td class="px-4 py-3">3.7</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">English</td>
+                                    <td class="px-4 py-3"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">B+</span></td>
+                                    <td class="px-4 py-3">85%</td>
+                                    <td class="px-4 py-3">3.3</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">History</td>
+                                    <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A</span></td>
+                                    <td class="px-4 py-3">90%</td>
+                                    <td class="px-4 py-3">4.0</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">Art</td>
+                                    <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A+</span></td>
+                                    <td class="px-4 py-3">95%</td>
+                                    <td class="px-4 py-3">4.0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Activities Tab -->
+            <div id="studentActivitiesTab" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-lg border">
+                    <h3 class="font-semibold mb-4">Upcoming Assignments</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-orange-50 border border-orange-200 rounded">
+                            <div>
+                                <h4 class="font-medium">Math Assignment 3</h4>
+                                <p class="text-sm text-gray-600">Mathematics</p>
+                            </div>
+                            <span class="text-sm text-orange-600">Due: Jan 20</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-blue-50 border border-blue-200 rounded">
+                            <div>
+                                <h4 class="font-medium">Science Project</h4>
+                                <p class="text-sm text-gray-600">Science</p>
+                            </div>
+                            <span class="text-sm text-blue-600">Due: Jan 25</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-purple-50 border border-purple-200 rounded">
+                            <div>
+                                <h4 class="font-medium">History Essay</h4>
+                                <p class="text-sm text-gray-600">History</p>
+                            </div>
+                            <span class="text-sm text-purple-600">Due: Jan 28</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg border">
+                    <h3 class="font-semibold mb-4">Recent Submissions</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-green-50 border border-green-200 rounded">
+                            <div>
+                                <h4 class="font-medium">Math Quiz 2</h4>
+                                <p class="text-sm text-gray-600">Submitted: Jan 15</p>
+                            </div>
+                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-green-50 border border-green-200 rounded">
+                            <div>
+                                <h4 class="font-medium">Art Portfolio</h4>
+                                <p class="text-sm text-gray-600">Submitted: Jan 14</p>
+                            </div>
+                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">A+</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-blue-50 border border-blue-200 rounded">
+                            <div>
+                                <h4 class="font-medium">English Essay</h4>
+                                <p class="text-sm text-gray-600">Submitted: Jan 12</p>
+                            </div>
+                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">B+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Notifications Tab -->
+            <div id="studentNotificationsTab" class="hidden">
+                <div class="bg-white p-6 rounded-lg border">
+                    <h3 class="font-semibold mb-4">Recent Notifications</h3>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-medium text-blue-900">Academic Performance Update</h4>
+                                <span class="text-xs text-gray-500">Jan 15</span>
+                            </div>
+                            <p class="text-sm text-blue-700">Your monthly academic performance report is now available. Keep up the good work!</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 border border-gray-200 rounded opacity-75">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-medium text-gray-700">Assignment Reminder</h4>
+                                <span class="text-xs text-gray-500">Jan 10</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Don't forget to submit your Math Assignment 2 by tomorrow.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Screen navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('[id$="Screen"]').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        // Teacher tab navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            
+            // Update tab buttons
+            document.querySelectorAll('#teacherScreen button').forEach(btn => {
+                btn.className = btn.className.replace('tab-active', 'tab-inactive');
+            });
+            event.target.className = event.target.className.replace('tab-inactive', 'tab-active');
+        }
+
+        // Student tab navigation
+        function showStudentTab(tabName) {
+            // Hide all student tabs
+            document.querySelectorAll('[id^="student"][id$="Tab"]').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            document.getElementById('student' + tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'Tab').classList.remove('hidden');
+            
+            // Update tab buttons
+            document.querySelectorAll('#studentScreen button').forEach(btn => {
+                btn.className = btn.className.replace('tab-active', 'tab-inactive');
+            });
+            event.target.className = event.target.className.replace('tab-inactive', 'tab-active');
+        }
+
+        // Chart initialization
+        function initCharts() {
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart');
+            if (performanceCtx) {
+                new Chart(performanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Alice', 'Bob', 'Carol', 'David', 'Emma', 'Frank'],
+                        datasets: [{
+                            label: 'GPA',
+                            data: [3.7, 3.9, 2.8, 3.6, 4.0, 2.2],
+                            backgroundColor: ['#10B981', '#10B981', '#F59E0B', '#10B981', '#10B981', '#EF4444']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 4.0
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Attendance Chart
+            const attendanceCtx = document.getElementById('attendanceChart');
+            if (attendanceCtx) {
+                new Chart(attendanceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan'],
+                        datasets: [{
+                            label: 'Average Attendance %',
+                            data: [88, 82, 85, 78, 80],
+                            borderColor: '#4F46E5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Grade Distribution Chart
+            const gradeCtx = document.getElementById('gradeChart');
+            if (gradeCtx) {
+                new Chart(gradeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['A', 'B', 'C', 'D'],
+                        datasets: [{
+                            data: [2, 1, 2, 1],
+                            backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Student GPA Chart
+            const studentGPACtx = document.getElementById('studentGPAChart');
+            if (studentGPACtx) {
+                new Chart(studentGPACtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan'],
+                        datasets: [{
+                            label: 'GPA Progress',
+                            data: [3.2, 3.4, 3.6, 3.5, 3.7],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 2.0,
+                                max: 4.0
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Student Attendance Chart
+            const studentAttendanceCtx = document.getElementById('studentAttendanceChart');
+            if (studentAttendanceCtx) {
+                new Chart(studentAttendanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan'],
+                        datasets: [{
+                            label: 'Present',
+                            data: [20, 18, 19, 16, 12],
+                            backgroundColor: '#10B981'
+                        }, {
+                            label: 'Absent',
+                            data: [2, 4, 3, 6, 1],
+                            backgroundColor: '#EF4444'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                stacked: true
+                            },
+                            y: {
+                                stacked: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialize charts when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Small delay to ensure Chart.js is loaded
+            setTimeout(initCharts, 100);
+        });
+    </script>
+</body>
+</html>

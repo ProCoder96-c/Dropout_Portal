@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ student.get('Student Name', student.get('Name', 'Student')) }} - Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background:#f8f9fa;
+            margin:0;
+        }
+        header {
+            background:#343a40;
+            color:white;
+            padding:15px;
+            text-align:center;
+        }
+        .container {
+            padding:30px;
+            display:flex;
+            justify-content:center;
+            flex-direction:column;
+            align-items:center;
+        }
+        .card {
+            background:white;
+            padding:30px;
+            border-radius:10px;
+            box-shadow:0 0 15px rgba(0,0,0,0.2);
+            width:90%;
+            max-width:800px;
+            margin-bottom:20px;
+        }
+        h2 { margin-top:0; text-align:center; }
+        table {
+            width:100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding:12px;
+            border-bottom:1px solid #ddd;
+            text-align:left;
+        }
+        th { background:#f1f1f1; }
+        .btn {
+            display:inline-block;
+            padding:10px 20px;
+            background:#007bff;
+            color:white;
+            border:none;
+            border-radius:5px;
+            text-decoration:none;
+            cursor:pointer;
+            margin-top:10px;
+        }
+        .btn:hover { background:#0056b3; }
+        form textarea {
+            width:100%;
+            height:100px;
+            padding:10px;
+            margin-top:10px;
+            margin-bottom:10px;
+            border-radius:5px;
+            border:1px solid #ccc;
+            resize:none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Student Profile: {{ student.get('Student Name', student.get('Name', 'Student')) }}</h1>
+    </header>
+
+    <div class="container">
+        {% if google_available is defined and not google_available %}
+        <div class="card" style="border-left: 6px solid #dc3545;">
+            <h2 style="color:#dc3545; margin-bottom:10px;">Live data unavailable</h2>
+            <div style="color:#555;">Google Sheets connection is currently unavailable. Displaying local data if present.</div>
+        </div>
+        {% endif %}
+
+        <!-- Student Details -->
+        <div class="card">
+            <h2>Details</h2>
+            <table>
+                {% for key, value in student.items() %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Counseling History -->
+        {% if counselling_history %}
+        <div class="card">
+            <h2>📋 Counseling History ({{ counselling_history|length }} session{{ 's' if counselling_history|length != 1 else '' }})</h2>
+            <div style="max-height: 300px; overflow-y: auto;">
+                {% for record in counselling_history %}
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 10px; background: #f8f9fa;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #667eea;">{{ record.get('Teacher', record.get('teacher_name', 'Teacher')) }}</strong>
+                        <span style="color: #666; font-size: 0.9em;">{{ record.get('Timestamp', record.get('timestamp', 'Unknown date')) }}</span>
+                    </div>
+                    <div style="color: #333; line-height: 1.4;">
+                        {{ record.get('Message', record.get('message', 'No message')) }}
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">
+                            {{ record.get('Status', record.get('status', 'Sent')) }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Counseling Form -->
+        <div class="card">
+            <h2>💬 Schedule New Counseling Session</h2>
+            <form action="{{ url_for('schedule_counseling', sr_no=student['Sr No']) }}" method="POST">
+                <label for="message">Enter your message or notes:</label>
+                <textarea id="message" name="message" placeholder="Write your counseling message here..." required></textarea>
+                <button type="submit" class="btn">📧 Send Counseling Email</button>
+            </form>
+        </div>
+
+        <!-- Back to Dashboard -->
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn">← Back to Dashboard</a>
+
+    </div>
+</body>
+</html>
+<!-- Chatbot Widget Embedded for Student Dashboard -->
+<div class="chat-widget">
+    <div class="chat-header">
+        <h5>Chat with us!</h5>
+        <button class="close-chat">&times;</button>
+    </div>
+    <div class="chat-body">
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="chat-input" placeholder="Type a message...">
+        <button id="send-btn">Send</button>
+    </div>
+</div>
+<button class="chat-toggle-btn">
+    <i class="fas fa-comment"></i>
+</button>
+
+<style>
+    .chat-widget, .chat-toggle-btn {
+        transition: all 0.3s ease-in-out;
+    }
+    .chat-widget {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        width: 350px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        transform: scale(0);
+        transform-origin: bottom right;
+        z-index: 9999;
+    }
+    .chat-widget.open {
+        transform: scale(1);
+    }
+    .chat-header {
+        padding: 15px;
+        background: #007bff;
+        color: #fff;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .chat-body {
+        padding: 15px;
+        height: 300px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .chat-footer {
+        padding: 15px;
+        display: flex;
+        border-top: 1px solid #f0f0f0;
+        background: #fafafa;
+    }
+    #chat-input {
+        flex: 1;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+    }
+    #send-btn {
+        margin-left: 10px;
+        border: none;
+        background: #007bff;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .chat-toggle-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #007bff;
+        color: #fff;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 9999;
+    }
+    .chat-toggle-btn.hidden {
+        transform: scale(0);
+    }
+    .user-message, .bot-message {
+        margin-bottom: 10px;
+        padding: 10px 15px;
+        border-radius: 18px;
+        max-width: 80%;
+        line-height: 1.4;
+    }
+    .user-message {
+        background: #f1f1f1;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+    }
+    .bot-message {
+        background: #e1f5fe;
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+    }
+    .typing-indicator {
+        background: #e1f5fe;
+        align-self: flex-start;
+        border-radius: 18px;
+        padding: 10px 15px;
+        margin-bottom: 10px;
+    }
+    .typing-indicator span {
+        height: 8px;
+        width: 8px;
+        background-color: #999;
+        border-radius: 50%;
+        display: inline-block;
+        animation: bob 1s infinite;
+    }
+    .typing-indicator span:nth-of-type(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-of-type(3) { animation-delay: 0.4s; }
+    @keyframes bob { 50% { transform: translateY(-4px); } }
+</style>
+
+<script>
+    const chatWidget = document.querySelector('.chat-widget');
+    const chatToggleBtn = document.querySelector('.chat-toggle-btn');
+    const closeChatBtn = document.querySelector('.close-chat');
+    const sendBtn = document.getElementById('send-btn');
+    const chatInput = document.getElementById('chat-input');
+    const chatBody = document.querySelector('.chat-body');
+    let isFirstOpen = true;
+
+    chatToggleBtn.addEventListener('click', () => {
+        chatWidget.classList.add('open');
+        chatToggleBtn.classList.add('hidden');
+        if (isFirstOpen) {
+            appendMessage('Hello! How can I help you today?', 'bot-message');
+            isFirstOpen = false;
+        }
+    });
+
+    closeChatBtn.addEventListener('click', () => {
+        chatWidget.classList.remove('open');
+        chatToggleBtn.classList.remove('hidden');
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        const userMessage = chatInput.value;
+        if (userMessage.trim() === '') return;
+
+        appendMessage(userMessage, 'user-message');
+        chatInput.value = '';
+        showTypingIndicator();
+
+        fetch('/chatbot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(r => r.json())
+        .then(data => appendMessage(data.response, 'bot-message'))
+        .catch(() => appendMessage('Oops! Something went wrong. Please try again later.', 'bot-message'))
+        .finally(() => hideTypingIndicator());
+    }
+
+    function appendMessage(message, className) {
+        const el = document.createElement('div');
+        el.classList.add(className);
+        el.innerText = message;
+        chatBody.appendChild(el);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.classList.add('typing-indicator');
+        indicator.innerHTML = '<span></span><span></span><span></span>';
+        indicator.id = 'typing-indicator';
+        chatBody.appendChild(indicator);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) indicator.remove();
+    }
+</script>
+</html>

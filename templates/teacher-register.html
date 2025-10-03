@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(-45deg, #4facfe, #397174, #43e97b, #38f9d7);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .register-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      text-align: center;
+      color: #fff;
+      width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .form-row input {
+      flex: 1;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #ff6b6b;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #ff5252;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 15px;
+      color: #fff;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .success {
+      color: #4caf50;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .error {
+      color: #ff6961;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .login-link {
+      color: #fff;
+      text-decoration: underline;
+      margin-top: 10px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-card">
+    <h1>Teacher Registration</h1>
+    
+    <form method="POST" action="/teacher-register">
+      <input type="text" name="teacherName" placeholder="Full Name" required>
+      
+      <div class="form-row">
+        <input type="text" name="teacherUserId" placeholder="User ID" required>
+        <input type="password" name="teacherPassword" placeholder="Password" required>
+      </div>
+      
+      <input type="email" name="teacherEmail" placeholder="Email Address" required>
+      <input type="tel" name="teacherPhone" placeholder="Phone Number" required>
+      
+      <select name="teacherDepartment" required>
+        <option value="">Select Department</option>
+        <option value="Computer Science">Computer Science</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="Physics">Physics</option>
+        <option value="Chemistry">Chemistry</option>
+        <option value="Biology">Biology</option>
+        <option value="English">English</option>
+        <option value="History">History</option>
+        <option value="Economics">Economics</option>
+        <option value="Other">Other</option>
+      </select>
+      
+      <input type="text" name="teacherSubject" placeholder="Subject/Subject Code" required>
+      
+      <button type="submit">Register</button>
+    </form>
+
+    {% if success %}
+      <div class="success">{{ success }}</div>
+    {% endif %}
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <a href="{{ url_for('teacher_login') }}" class="login-link">Already have an account? Login here</a>
+    <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+  </div>
+</body>
+</html>
