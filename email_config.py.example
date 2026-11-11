@@ -14,7 +14,7 @@ SMTP_PORT = 587
 # 4. Use the generated password below
 
 EMAIL_ADDRESS = "soham.username@gmail.com"  # Team Gmail account
-EMAIL_PASSWORD = "tqqv ttol jkby gkil"    # Team Gmail App Password
+EMAIL_PASSWORD = "your-16-character-app-password"    # Team Gmail App Password
 
 # Email Template Settings
 SCHOOL_NAME = "AISSMS IOIT"  # School name
